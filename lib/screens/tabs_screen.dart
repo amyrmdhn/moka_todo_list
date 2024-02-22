@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moka_todo_list/screens/todo_screen.dart';
 
 import '../models/todo.dart';
 import '../size_config.dart';
@@ -43,14 +44,13 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    Widget activeScreen = const Center(
-      child: Text('Screen 1'),
+    Widget activeScreen = TodoScreen(
+      todos: _uncompletedTodos,
+      isUncompletedScreen: true,
     );
 
     if (_selectedPageIndex == 1) {
-      activeScreen = const Center(
-        child: Text('Screen 2'),
-      );
+      activeScreen = TodoScreen(todos: _uncompletedTodos);
     }
 
     return Scaffold(
