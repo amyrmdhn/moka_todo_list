@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:moka_todo_list/screens/todo_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/todo.dart';
 import '../size_config.dart';
+import '../models/todo.dart';
+import '../providers/todos_provider.dart';
+import '../screens/completed_task.dart';
+import '../screens/uncompleted_task.dart';
 
-class TabsScreen extends StatefulWidget {
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class _TabsScreenState extends ConsumerState<TabsScreen> {
   var _selectedPageIndex = 0;
   final _uncompletedTodos = [
     Todo(
@@ -43,14 +46,12 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    final uncompletedTodo = ref.watch(ucompletedTodoProvider);
 
-    Widget activeScreen = TodoScreen(
-      todos: _uncompletedTodos,
-      isUncompletedScreen: true,
-    );
+    Widget activeScreen = UncompletedTodoScreen(todos: uncompletedTodo);
 
     if (_selectedPageIndex == 1) {
-      activeScreen = TodoScreen(todos: _uncompletedTodos);
+      activeScreen = CompletedTodoScreen(completedTodos: _uncompletedTodos);
     }
 
     return Scaffold(
