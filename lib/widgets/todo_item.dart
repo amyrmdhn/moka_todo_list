@@ -19,6 +19,11 @@ class TodoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = formatter.format(DateTime.now());
+    final dateData = formatter.format(todo.date);
+
+    final isToday = dateData == today ? 'Today' : dateData;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -43,9 +48,9 @@ class TodoItem extends StatelessWidget {
               ),
             ),
             trailing: Text(
-              'Today',
+              isToday,
               style: textTheme.titleSmall!.copyWith(
-                color: todo.title == 'Today'
+                color: isToday == 'Today'
                     ? colorScheme.error
                     : colorScheme.onBackground,
               ),

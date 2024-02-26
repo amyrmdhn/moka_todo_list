@@ -119,9 +119,6 @@ class _NewTodoState extends ConsumerState<NewTodo> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  style: TextButton.styleFrom(
-                      // foregroundColor: Theme.of(context).colorScheme.outline
-                      ),
                   child: const Text('Cancel'),
                 ),
                 SizedBox(width: getProportionateScreenWidth(8)),
