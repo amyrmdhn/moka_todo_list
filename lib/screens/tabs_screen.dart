@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../size_config.dart';
 import '../screens/completed_task.dart';
 import '../screens/uncompleted_task.dart';
+import '../providers/navbar_provider.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
@@ -13,26 +13,21 @@ class TabsScreen extends ConsumerStatefulWidget {
 }
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
-  var _selectedPageIndex = 0;
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
-  }
+  final _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-
-    Widget activeScreen = const UncompletedTodoScreen();
-
-    if (_selectedPageIndex == 1) {
-      activeScreen = const CompletedTodoScreen();
-    }
+    var selectedPageIndex = ref.watch(navbarProvider);
 
     return Scaffold(
-      body: activeScreen,
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          UncompletedTodoScreen(),
+          CompletedTodoScreen(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -48,8 +43,16 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
             label: 'Uncompleted Task',
           ),
         ],
-        onTap: _selectPage,
-        currentIndex: _selectedPageIndex,
+        onTap: (index) {
+          ref.read(navbarProvider.notifier).selectPage(index);
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.ease,
+          );
+        },
+        type: BottomNavigationBarType.fixed,
+        currentIndex: selectedPageIndex,
         showSelectedLabels: false,
         showUnselectedLabels: false,
       ),

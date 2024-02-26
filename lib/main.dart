@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moka_todo_list/screens/tabs_screen.dart';
+
+import 'size_config.dart';
+import '../screens/tabs_screen.dart';
 
 final theme = ThemeData().copyWith(
   colorScheme: ColorScheme.fromSeed(
@@ -23,6 +25,8 @@ class MokaTodo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+
     return MaterialApp(
       home: const TabsScreen(),
       title: 'Miko: To-do list',
