@@ -52,7 +52,9 @@ class UncompletedTodoScreen extends ConsumerWidget {
                     TodoItem(
                       isCompleted: false,
                       todo: todo,
-                      onLongPress: () {},
+                      onLongPress: () {
+                        _openDetailTodoOverlay(context, ref, todo);
+                      },
                       onTap: () {
                         _openAddTodoConfirmOverlay(context, ref, todo);
                       },
@@ -91,6 +93,27 @@ class UncompletedTodoScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _openDetailTodoOverlay(BuildContext context, WidgetRef ref, Todo todo) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(todo.title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(todo.detail),
+            SizedBox(height: getProportionateScreenHeight(6)),
+            Text('Date: ${formatter.format(todo.date)}'),
+          ],
+        ),
+        titleTextStyle: textTheme.titleLarge,
+        contentTextStyle: textTheme.bodyLarge,
+      ),
+      
     );
   }
 

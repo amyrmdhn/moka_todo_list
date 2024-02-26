@@ -40,13 +40,35 @@ class CompletedTodoScreen extends ConsumerWidget {
                       completedTodo[index],
                     );
                   },
-                  onLongPress: () {},
+                  onLongPress: () {
+                    _openDetailTodoOverlay(context, ref, completedTodo[index]);
+                  },
                 ),
                 itemCount: completedTodo.length,
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+
+  void _openDetailTodoOverlay(BuildContext context, WidgetRef ref, Todo todo) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(todo.title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(todo.detail),
+            SizedBox(height: getProportionateScreenHeight(6)),
+            Text('Date: ${formatter.format(todo.date)}'),
+          ],
+        ),
+        titleTextStyle: textTheme.titleLarge,
+        contentTextStyle: textTheme.bodyLarge,
       ),
     );
   }
