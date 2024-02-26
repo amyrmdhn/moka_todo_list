@@ -1,37 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:moka_todo_list/widgets/todo_item.dart';
-
-import '../models/todo.dart';
 import '../size_config.dart';
+
+import '../providers/todos_provider.dart';
 import '../widgets/header_image.dart';
+import '../widgets/new_todo.dart';
+import '../widgets/todo_item.dart';
 import '../widgets/title_section.dart';
 
-class UncompletedTodoScreen extends StatefulWidget {
+class UncompletedTodoScreen extends ConsumerWidget {
   const UncompletedTodoScreen({
     super.key,
-    required this.todos,
   });
 
-  final List<Todo> todos;
-
-  @override
-  State<UncompletedTodoScreen> createState() => _UncompletedTodoScreenState();
-}
-
-class _UncompletedTodoScreenState extends State<UncompletedTodoScreen> {
-  final _titleController = TextEditingController();
-  final _detailController = TextEditingController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _titleController.dispose();
-    _detailController.dispose();
+  void _openAddTodoOverlay(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => const NewTodo(),
+      isScrollControlled: true,
+      useSafeArea: true,
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var uncompletedTodos = ref.watch(uncompletedTodoProvider);
+
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -43,7 +38,7 @@ class _UncompletedTodoScreenState extends State<UncompletedTodoScreen> {
             const HeaderImage(
               path: 'assets/images/header_uncompleted_task.svg',
             ),
-            buttonAddTodo(context),
+            buttonAddTodo(context, _openAddTodoOverlay),
             const SizedBox(height: 28.0),
             const TitleSection(text: 'UNCOMPLETED TASK'),
             const SizedBox(height: 12.0),
@@ -53,11 +48,19 @@ class _UncompletedTodoScreenState extends State<UncompletedTodoScreen> {
               width: double.infinity,
               child: ListView(
                 children: [
-                  for (final todo in widget.todos)
+                  for (final todo in uncompletedTodos)
                     TodoItem(
+                      isCompleted: false,
                       todo: todo,
                       onLongPress: () {},
-                      onTap: () {},
+                      onTap: () {
+                        ref
+                            .read(uncompletedTodoProvider.notifier)
+                            .removeTodo(todo);
+                        ref
+                            .read(completedTodoProvider.notifier)
+                            .markAsCompletedTodo(todo);
+                      },
                     ),
                 ],
               ),
@@ -68,7 +71,8 @@ class _UncompletedTodoScreenState extends State<UncompletedTodoScreen> {
     );
   }
 
-  Card buttonAddTodo(BuildContext context) {
+  Card buttonAddTodo(
+      BuildContext context, void Function(BuildContext context) openAddTodo) {
     return Card(
       margin: EdgeInsets.zero,
       color: Theme.of(context).colorScheme.background,
@@ -82,7 +86,9 @@ class _UncompletedTodoScreenState extends State<UncompletedTodoScreen> {
           ),
         ),
         trailing: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            openAddTodo(context);
+          },
           icon: Icon(
             Icons.add_box,
             color: colorScheme.primary,

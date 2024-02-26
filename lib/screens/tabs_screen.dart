@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/todos_provider.dart';
 import '../size_config.dart';
 import '../models/todo.dart';
-import '../providers/todos_provider.dart';
 import '../screens/completed_task.dart';
 import '../screens/uncompleted_task.dart';
+import '../widgets/new_todo.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
@@ -16,26 +17,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   var _selectedPageIndex = 0;
-  final _uncompletedTodos = [
-    Todo(
-      id: '1',
-      title: 'Learning Flutter',
-      detail: 'Always Learning',
-      date: DateTime.now(),
-    ),
-    Todo(
-      id: '2',
-      title: 'Learning JavaScript',
-      detail: 'Always Learning',
-      date: DateTime.now(),
-    ),
-    Todo(
-      id: '3',
-      title: 'Learning Python',
-      detail: 'Always Learning',
-      date: DateTime.now(),
-    ),
-  ];
 
   void _selectPage(int index) {
     setState(() {
@@ -46,12 +27,11 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    final uncompletedTodo = ref.watch(ucompletedTodoProvider);
 
-    Widget activeScreen = UncompletedTodoScreen(todos: uncompletedTodo);
+    Widget activeScreen = const UncompletedTodoScreen();
 
     if (_selectedPageIndex == 1) {
-      activeScreen = CompletedTodoScreen(completedTodos: _uncompletedTodos);
+      activeScreen = const CompletedTodoScreen();
     }
 
     return Scaffold(

@@ -14,7 +14,24 @@ class UncompletedTodoNotifier extends StateNotifier<List<Todo>> {
   }
 }
 
-final ucompletedTodoProvider =
+class CompletedTodoNotifier extends StateNotifier<List<Todo>> {
+  CompletedTodoNotifier() : super([]);
+
+  void markAsCompletedTodo(Todo todo) {
+    state = [todo, ...state];
+  }
+
+  void markAsNotCompletedTodo(Todo todo) {
+    state = state.where((e) => e != todo).toList();
+  }
+}
+
+final uncompletedTodoProvider =
     StateNotifierProvider<UncompletedTodoNotifier, List<Todo>>(
   (ref) => UncompletedTodoNotifier(),
+);
+
+final completedTodoProvider =
+    StateNotifierProvider<CompletedTodoNotifier, List<Todo>>(
+  (ref) => CompletedTodoNotifier(),
 );

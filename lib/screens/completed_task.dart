@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 import '../size_config.dart';
-import '../models/todo.dart';
+
+import '../providers/todos_provider.dart';
 import '../widgets/header_image.dart';
 import '../widgets/title_section.dart';
 import '../widgets/todo_item.dart';
 
-class CompletedTodoScreen extends StatelessWidget {
+class CompletedTodoScreen extends ConsumerWidget {
   const CompletedTodoScreen({
     super.key,
-    required this.completedTodos,
   });
 
-  final List<Todo> completedTodos;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final completedTodo = ref.watch(completedTodoProvider);
+
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -30,11 +32,19 @@ class CompletedTodoScreen extends StatelessWidget {
             Expanded(
               child: ListView.builder(
                 itemBuilder: (context, index) => TodoItem(
-                  todo: completedTodos[index],
-                  onTap: () {},
+                  isCompleted: true,
+                  todo: completedTodo[index],
+                  onTap: () {
+                    ref
+                        .read(completedTodoProvider.notifier)
+                        .markAsNotCompletedTodo(completedTodo[index]);
+                    ref
+                        .read(uncompletedTodoProvider.notifier)
+                        .addTodo(completedTodo[index]);
+                  },
                   onLongPress: () {},
                 ),
-                itemCount: completedTodos.length,
+                itemCount: completedTodo.length,
               ),
             )
           ],

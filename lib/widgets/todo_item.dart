@@ -9,23 +9,23 @@ class TodoItem extends StatelessWidget {
     required this.todo,
     required this.onLongPress,
     required this.onTap,
+    required this.isCompleted,
   });
 
   final Todo todo;
+  final bool isCompleted;
   final void Function() onLongPress;
   final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
-    final bool isCompleted = false;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onLongPress: onLongPress,
         child: Card(
           margin: EdgeInsets.zero,
-          color: Theme.of(context).colorScheme.background,
+          color: colorScheme.background,
           child: ListTile(
             onTap: onTap,
             leading: isCompleted
@@ -40,9 +40,6 @@ class TodoItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: textTheme.titleSmall!.copyWith(
                 color: colorScheme.onBackground,
-                decoration: isCompleted
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
               ),
             ),
             trailing: Text(
