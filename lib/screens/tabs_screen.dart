@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/todos_provider.dart';
 import '../size_config.dart';
-import '../models/todo.dart';
 import '../screens/completed_task.dart';
 import '../screens/uncompleted_task.dart';
-import '../widgets/new_todo.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});

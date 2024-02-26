@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../size_config.dart';
-
+import '../models/todo.dart';
 import '../providers/todos_provider.dart';
 import '../widgets/header_image.dart';
 import '../widgets/new_todo.dart';
@@ -25,7 +25,7 @@ class UncompletedTodoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var uncompletedTodos = ref.watch(uncompletedTodoProvider);
+    final uncompletedTodo = ref.watch(uncompletedTodoProvider);
 
     return SafeArea(
       child: Padding(
@@ -48,18 +48,13 @@ class UncompletedTodoScreen extends ConsumerWidget {
               width: double.infinity,
               child: ListView(
                 children: [
-                  for (final todo in uncompletedTodos)
+                  for (final todo in uncompletedTodo)
                     TodoItem(
                       isCompleted: false,
                       todo: todo,
                       onLongPress: () {},
                       onTap: () {
-                        ref
-                            .read(uncompletedTodoProvider.notifier)
-                            .removeTodo(todo);
-                        ref
-                            .read(completedTodoProvider.notifier)
-                            .markAsCompletedTodo(todo);
+                        _openAddTodoConfirmOverlay(context, ref, todo);
                       },
                     ),
                 ],
@@ -95,6 +90,40 @@ class UncompletedTodoScreen extends ConsumerWidget {
             size: 30,
           ),
         ),
+      ),
+    );
+  }
+
+  void _openAddTodoConfirmOverlay(
+      BuildContext context, WidgetRef ref, Todo todo) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm'),
+        content: const Text('Are you sure you\'ve finished it?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(uncompletedTodoProvider.notifier).removeTodo(todo);
+              ref
+                  .read(completedTodoProvider.notifier)
+                  .markAsCompletedTodo(todo);
+
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+            child: const Text('Yes'),
+          ),
+        ],
       ),
     );
   }
