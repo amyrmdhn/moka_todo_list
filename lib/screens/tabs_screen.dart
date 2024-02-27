@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../screens/completed_task.dart';
 import '../screens/uncompleted_task.dart';
 import '../providers/navbar_provider.dart';
+import '../size_config.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
@@ -17,6 +18,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     var selectedPageIndex = ref.watch(navbarProvider);
 
     return Scaffold(

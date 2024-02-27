@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../size_config.dart';
 import '../models/todo.dart';
@@ -49,15 +50,29 @@ class UncompletedTodoScreen extends ConsumerWidget {
               child: ListView(
                 children: [
                   for (final todo in uncompletedTodo)
-                    TodoItem(
-                      isCompleted: false,
-                      todo: todo,
-                      onLongPress: () {
-                        _openDetailTodoOverlay(context, ref, todo);
-                      },
-                      onTap: () {
-                        _openAddTodoConfirmOverlay(context, ref, todo);
-                      },
+                    Slidable(
+                      endActionPane: ActionPane(
+                        extentRatio: 0.4,
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) {},
+                            backgroundColor: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                            icon: Icons.delete,
+                          )
+                        ],
+                      ),
+                      child: TodoItem(
+                        isCompleted: false,
+                        todo: todo,
+                        onLongPress: () {
+                          _openDetailTodoOverlay(context, ref, todo);
+                        },
+                        onTap: () {
+                          _openAddTodoConfirmOverlay(context, ref, todo);
+                        },
+                      ),
                     ),
                 ],
               ),
@@ -113,7 +128,6 @@ class UncompletedTodoScreen extends ConsumerWidget {
         titleTextStyle: textTheme.titleLarge,
         contentTextStyle: textTheme.bodyLarge,
       ),
-      
     );
   }
 

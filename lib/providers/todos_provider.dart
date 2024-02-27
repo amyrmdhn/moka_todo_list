@@ -7,10 +7,16 @@ class UncompletedTodoNotifier extends StateNotifier<List<Todo>> {
 
   void addTodo(Todo todo) {
     state = [todo, ...state];
+    state.sort((a, b) {
+      return -a.date.compareTo(b.date);
+    });
   }
 
   void removeTodo(Todo todo) {
     state = state.where((e) => e != todo).toList();
+    state.sort((a, b) {
+      return -a.date.compareTo(b.date);
+    });
   }
 }
 
@@ -19,10 +25,16 @@ class CompletedTodoNotifier extends StateNotifier<List<Todo>> {
 
   void markAsCompletedTodo(Todo todo) {
     state = [todo, ...state];
+    state.sort((a, b) {
+      return -a.date.compareTo(b.date);
+    });
   }
 
   void markAsNotCompletedTodo(Todo todo) {
     state = state.where((e) => e != todo).toList();
+    state.sort((a, b) {
+      return -a.date.compareTo(b.date);
+    });
   }
 }
 
