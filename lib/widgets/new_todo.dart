@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:moka_todo_list/providers/todos_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:moka_todo_list/providers/date_provider.dart';
 
 import '../size_config.dart';
-
 import '../models/todo.dart';
+import '../providers/todos_provider.dart';
 
 class NewTodo extends ConsumerStatefulWidget {
   const NewTodo({
@@ -19,7 +20,7 @@ class _NewTodoState extends ConsumerState<NewTodo> {
   final _titleController = TextEditingController();
   final _detailController = TextEditingController();
 
-  DateTime? _selectedDate;
+  // DateTime? _selectedDate;
 
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -32,15 +33,17 @@ class _NewTodoState extends ConsumerState<NewTodo> {
       initialDate: now,
     );
 
-    setState(() {
-      _selectedDate = pickedDate;
-    });
+    // setState(() {
+    //   _selectedDate = pickedDate;
+    // });
+
+    ref.read(dateProvider.notifier).selectedDate(pickedDate!);
   }
 
-  void _submitTodo() {
+  void _submitTodo(DateTime? selectedDate) {
     if (_titleController.text.trim().isEmpty ||
         _detailController.text.trim().isEmpty ||
-        _selectedDate == null) {
+        selectedDate == null) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -63,9 +66,11 @@ class _NewTodoState extends ConsumerState<NewTodo> {
           Todo(
             title: _titleController.text,
             detail: _detailController.text,
-            date: _selectedDate!,
+            date: selectedDate,
           ),
         );
+
+    ref.invalidate(dateProvider);
 
     Navigator.pop(context);
   }
@@ -79,9 +84,10 @@ class _NewTodoState extends ConsumerState<NewTodo> {
 
   @override
   Widget build(BuildContext context) {
-    var isSelectedDate = _selectedDate == null
-        ? 'Selected Date'
-        : formatter.format(_selectedDate!);
+    final selectedDate = ref.watch(dateProvider);
+
+    var isSelectedDate =
+        selectedDate == null ? 'Selected Date' : formatter.format(selectedDate);
 
     final keyboardSize = MediaQuery.of(context).viewInsets.bottom;
 
@@ -123,7 +129,9 @@ class _NewTodoState extends ConsumerState<NewTodo> {
                 ),
                 SizedBox(width: getProportionateScreenWidth(8)),
                 ElevatedButton(
-                  onPressed: _submitTodo,
+                  onPressed: () {
+                    _submitTodo(selectedDate);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
