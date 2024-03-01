@@ -18,6 +18,13 @@ class UncompletedTodoNotifier extends StateNotifier<List<Todo>> {
       return -a.date.compareTo(b.date);
     });
   }
+
+  void remodeTodoByID(Map<String, dynamic> ids) {
+    state = state.where((e) => e.id != ids['name']).toList();
+    state.sort((a, b) {
+      return -a.date.compareTo(b.date);
+    });
+  }
 }
 
 class CompletedTodoNotifier extends StateNotifier<List<Todo>> {

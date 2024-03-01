@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../size_config.dart';
 import '../models/todo.dart';
@@ -44,39 +43,29 @@ class UncompletedTodoScreen extends ConsumerWidget {
             const TitleSection(text: 'UNCOMPLETED TASK'),
             const SizedBox(height: 12.0),
             Expanded(
-                child: SizedBox(
-              height: double.infinity,
-              width: double.infinity,
-              child: ListView(
-                children: [
-                  for (final todo in uncompletedTodo)
-                    Slidable(
-                      endActionPane: ActionPane(
-                        extentRatio: 0.4,
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) {},
-                            backgroundColor: Colors.red,
-                            borderRadius: BorderRadius.circular(8),
-                            icon: Icons.delete,
-                          )
-                        ],
-                      ),
-                      child: TodoItem(
-                        isCompleted: false,
+              child: SizedBox(
+                height: double.infinity,
+                width: double.infinity,
+                child: ListView(
+                  children: [
+                    for (final todo in uncompletedTodo)
+                      TodoItem(
                         todo: todo,
                         onLongPress: () {
                           _openDetailTodoOverlay(context, ref, todo);
                         },
+                        onRemove: (context) {
+                          _removeTodo(context, ref, todo);
+                        },
                         onTap: () {
                           _openAddTodoConfirmOverlay(context, ref, todo);
                         },
-                      ),
-                    ),
-                ],
+                        isCompleted: false,
+                      )
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),
@@ -86,8 +75,6 @@ class UncompletedTodoScreen extends ConsumerWidget {
   Card buttonAddTodo(
       BuildContext context, void Function(BuildContext context) openAddTodo) {
     return Card(
-      margin: EdgeInsets.zero,
-      color: Theme.of(context).colorScheme.background,
       child: ListTile(
         leading: Text(
           'Add your tasks',
@@ -106,6 +93,23 @@ class UncompletedTodoScreen extends ConsumerWidget {
             color: colorScheme.primary,
             size: 30,
           ),
+        ),
+      ),
+    );
+  }
+
+  void _removeTodo(BuildContext context, WidgetRef ref, Todo todo) {
+    ref.read(uncompletedTodoProvider.notifier).removeTodo(todo);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Deleted...!'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            ref.read(uncompletedTodoProvider.notifier).addTodo(todo);
+          },
         ),
       ),
     );
@@ -132,7 +136,7 @@ class UncompletedTodoScreen extends ConsumerWidget {
   }
 
   void _openAddTodoConfirmOverlay(
-      BuildContext context, WidgetRef ref, Todo todo) {
+      BuildContext context, WidgetRef ref, Todo todo) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

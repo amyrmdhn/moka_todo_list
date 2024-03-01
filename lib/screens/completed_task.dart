@@ -31,8 +31,13 @@ class CompletedTodoScreen extends ConsumerWidget {
             Expanded(
               child: ListView.builder(
                 itemBuilder: (context, index) => TodoItem(
-                  isCompleted: true,
                   todo: completedTodo[index],
+                  onLongPress: () {
+                    _openDetailTodoOverlay(context, ref, completedTodo[index]);
+                  },
+                  onRemove: (context) {
+                    _removeTodo(context, ref, completedTodo[index]);
+                  },
                   onTap: () {
                     _openAddTodoConfirmOverlay(
                       context,
@@ -40,14 +45,29 @@ class CompletedTodoScreen extends ConsumerWidget {
                       completedTodo[index],
                     );
                   },
-                  onLongPress: () {
-                    _openDetailTodoOverlay(context, ref, completedTodo[index]);
-                  },
+                  isCompleted: false,
                 ),
                 itemCount: completedTodo.length,
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  void _removeTodo(BuildContext context, WidgetRef ref, Todo todo) {
+    ref.read(completedTodoProvider.notifier).markAsNotCompletedTodo(todo);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Deleted...!'),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            ref.read(completedTodoProvider.notifier).markAsCompletedTodo(todo);
+          },
         ),
       ),
     );

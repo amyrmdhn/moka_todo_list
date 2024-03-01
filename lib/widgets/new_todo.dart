@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import 'package:moka_todo_list/providers/date_provider.dart';
 
 import '../size_config.dart';
+
 import '../models/todo.dart';
+import '../providers/date_provider.dart';
 import '../providers/todos_provider.dart';
 
 class NewTodo extends ConsumerStatefulWidget {
@@ -20,8 +20,6 @@ class _NewTodoState extends ConsumerState<NewTodo> {
   final _titleController = TextEditingController();
   final _detailController = TextEditingController();
 
-  // DateTime? _selectedDate;
-
   void _presentDatePicker() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 2, now.month, now.day);
@@ -33,14 +31,10 @@ class _NewTodoState extends ConsumerState<NewTodo> {
       initialDate: now,
     );
 
-    // setState(() {
-    //   _selectedDate = pickedDate;
-    // });
-
     ref.read(dateProvider.notifier).selectedDate(pickedDate!);
   }
 
-  void _submitTodo(DateTime? selectedDate) {
+  void _submitTodo(DateTime? selectedDate) async {
     if (_titleController.text.trim().isEmpty ||
         _detailController.text.trim().isEmpty ||
         selectedDate == null) {
@@ -59,6 +53,7 @@ class _NewTodoState extends ConsumerState<NewTodo> {
           ],
         ),
       );
+
       return;
     }
 
@@ -72,6 +67,7 @@ class _NewTodoState extends ConsumerState<NewTodo> {
 
     ref.invalidate(dateProvider);
 
+    if (!context.mounted) return;
     Navigator.pop(context);
   }
 
