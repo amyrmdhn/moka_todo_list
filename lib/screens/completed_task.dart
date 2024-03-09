@@ -8,13 +8,29 @@ import '../widgets/header_image.dart';
 import '../widgets/title_section.dart';
 import '../widgets/todo_item.dart';
 
-class CompletedTodoScreen extends ConsumerWidget {
+class CompletedTodoScreen extends ConsumerStatefulWidget {
   const CompletedTodoScreen({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CompletedTodoScreen> createState() {
+    return _CompletedTodoScreenState();
+  }
+}
+
+class _CompletedTodoScreenState extends ConsumerState<CompletedTodoScreen> {
+  late Future<void> _futureCompletedTodo;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureCompletedTodo =
+        ref.read(completedTodoProvider.notifier).loadCompletedTodo();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final completedTodo = ref.watch(completedTodoProvider);
 
     return SafeArea(
@@ -29,25 +45,32 @@ class CompletedTodoScreen extends ConsumerWidget {
             const TitleSection(text: 'COMPLETED TASK'),
             SizedBox(height: getProportionateScreenHeight(28)),
             Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) => TodoItem(
-                  todo: completedTodo[index],
-                  onLongPress: () {
-                    _openDetailTodoOverlay(context, ref, completedTodo[index]);
-                  },
-                  onRemove: (context) {
-                    _removeTodo(context, ref, completedTodo[index]);
-                  },
-                  onTap: () {
-                    _openAddTodoConfirmOverlay(
-                      context,
-                      ref,
-                      completedTodo[index],
-                    );
-                  },
-                  isCompleted: false,
-                ),
-                itemCount: completedTodo.length,
+              child: FutureBuilder(
+                future: _futureCompletedTodo,
+                builder: (context, snapshot) =>
+                    snapshot.connectionState == ConnectionState.waiting
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            itemBuilder: (context, index) => TodoItem(
+                              todo: completedTodo[index],
+                              onLongPress: () {
+                                _openDetailTodoOverlay(
+                                    context, ref, completedTodo[index]);
+                              },
+                              onRemove: (context) {
+                                _removeTodo(context, ref, completedTodo[index]);
+                              },
+                              onTap: () {
+                                _openAddTodoConfirmOverlay(
+                                  context,
+                                  ref,
+                                  completedTodo[index],
+                                );
+                              },
+                              isCompleted: false,
+                            ),
+                            itemCount: completedTodo.length,
+                          ),
               ),
             )
           ],

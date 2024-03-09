@@ -9,10 +9,26 @@ import '../widgets/new_todo.dart';
 import '../widgets/todo_item.dart';
 import '../widgets/title_section.dart';
 
-class UncompletedTodoScreen extends ConsumerWidget {
+class UncompletedTodoScreen extends ConsumerStatefulWidget {
   const UncompletedTodoScreen({
     super.key,
   });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _UncompletedTodoScreenState();
+  }
+}
+
+class _UncompletedTodoScreenState extends ConsumerState<UncompletedTodoScreen> {
+  late Future<void> _futureUncompletedTodo;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureUncompletedTodo =
+        ref.read(uncompletedTodoProvider.notifier).loadUncompletedTodo();
+  }
 
   void _openAddTodoOverlay(BuildContext context) {
     showModalBottomSheet(
@@ -24,7 +40,7 @@ class UncompletedTodoScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final uncompletedTodo = ref.watch(uncompletedTodoProvider);
 
     return SafeArea(
@@ -46,23 +62,30 @@ class UncompletedTodoScreen extends ConsumerWidget {
               child: SizedBox(
                 height: double.infinity,
                 width: double.infinity,
-                child: ListView(
-                  children: [
-                    for (final todo in uncompletedTodo)
-                      TodoItem(
-                        todo: todo,
-                        onLongPress: () {
-                          _openDetailTodoOverlay(context, ref, todo);
-                        },
-                        onRemove: (context) {
-                          _removeTodo(context, ref, todo);
-                        },
-                        onTap: () {
-                          _openAddTodoConfirmOverlay(context, ref, todo);
-                        },
-                        isCompleted: false,
-                      )
-                  ],
+                child: FutureBuilder(
+                  future: _futureUncompletedTodo,
+                  builder: (context, snapshot) => snapshot.connectionState ==
+                          ConnectionState.waiting
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView(
+                          children: [
+                            for (final todo in uncompletedTodo)
+                              TodoItem(
+                                todo: todo,
+                                onLongPress: () {
+                                  _openDetailTodoOverlay(context, ref, todo);
+                                },
+                                onRemove: (context) {
+                                  _removeTodo(context, ref, todo);
+                                },
+                                onTap: () {
+                                  _openAddTodoConfirmOverlay(
+                                      context, ref, todo);
+                                },
+                                isCompleted: false,
+                              )
+                          ],
+                        ),
                 ),
               ),
             ),

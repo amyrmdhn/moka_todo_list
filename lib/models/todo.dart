@@ -7,7 +7,8 @@ class Todo {
     required this.title,
     required this.detail,
     required this.date,
-  }) : id = uuid.v4();
+    String? id,
+  }) : id = id ?? uuid.v4();
 
   final String id;
   final String title;
