@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../screens/tabs_screen.dart';
 
 final theme = ThemeData().copyWith(
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(255, 0, 72, 214),
   ),
   textTheme: GoogleFonts.poppinsTextTheme(),
+  cardTheme: const CardTheme().copyWith(
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+  listTileTheme: const ListTileThemeData().copyWith(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
 );
 
 void main() {
-  runApp(const MokaTodo());
+  runApp(
+    const ProviderScope(
+      child: MokaTodo(),
+    ),
+  );
 }
 
 class MokaTodo extends StatelessWidget {
@@ -18,9 +36,7 @@ class MokaTodo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const Center(
-        child: Text('First Commit'),
-      ),
+      home: const TabsScreen(),
       title: 'Miko: To-do list',
       theme: theme,
       debugShowCheckedModeBanner: false,
